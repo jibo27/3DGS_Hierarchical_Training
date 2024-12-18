@@ -1,0 +1,103 @@
+OptimizationParams:
+    # Default number of iterations per frame
+    single_step: 300 
+
+    # Default number of iterations per frame for each training level
+    num_iterations_per_frame_each_level: [300, 300, 300] 
+
+    # Explanation of the 3DGS model hierarchy:
+    # - Leaf 3DGS model: Trained at the highest hierarchical level
+    # - Non-leaf 3DGS model: Result of merging multiple 3DGS models
+    # Different densification intervals are used for leaf and non-leaf 3DGS models
+    densification_interval_leaf: 100
+
+    #####################################################
+    # Multi-source supervision (MSS) related parameters #
+    #####################################################
+    # Phase 1: original training images + virtual view from base 3DGS models
+    # Phase 2: original training images + interpolated frames from video frame interpolation models
+
+    # Number of iterations per frame for the base model
+    # Total iterations: total_iteration = mss_phase1_iteration_per_frame * num_frames
+    mss_phase1_iteration_per_frame: 50
+
+    # Densification interval for transferring knowledge from base 3DGS models
+    # Set to null if not used
+    mss_phase1_densification_interval: 100
+
+    # Densification stops after this many iterations:
+    # total_iteration * mss_phase1_densify_until_iter_ratio
+    mss_phase1_densify_until_iter_ratio: null 
+
+    # Ratio for selecting frames during multi-source supervision:
+    # - mss_phase1_ratio: Probability of using pseudo-view frames from base 3DGS models (e.g., 50%)
+    # - mss_phase2_ratio: Probability of using interpolated frames (e.g., 50%)
+    mss_phase1_ratio: 0.5
+    mss_phase2_densification_interval: 100
+    mss_phase2_densify_until_iter_ratio: null
+    mss_phase2_ratio: 0.5
+
+
+ModelParams:
+    # Field of View (FoV) configuration:
+    # - For "images_only" data types, this sets a single FoV for all frames
+    # - If different frames require different FoVs, use a custom data loader or the existing one, and set these to null
+    # - An example is Church.yml
+    FovX: 1.3541787529604106
+    FovY: null # If null, it is induced from FovX
+
+    # Training data configuration
+    data_path_train: data/Tanks/Francis/images
+    data_type_train: images_only
+
+    # Evaluation data configuration
+    # - Relative poses calculated by SfM are used for evaluation
+    # - Adjust "data_path_eval" and "data_type_eval" to match your data
+    data_path_eval: data/Tanks/Francis
+    data_type_eval: tanks
+
+    # Experiment details
+    expname: full
+    category: Tanks
+    seq_name: Francis
+
+    # Output folder and log file locations:
+    # - Output folder: output/{expname}/{category}_{seq_name}
+    # - Log file: output/{expname}/{category}_{seq_name}/output.log
+
+    depth_model_type: dpt
+
+PipelineParams:
+    # Pose loading configuration:
+    # - Set to null if not loading poses
+    # - Example: "output/full/Tanks_Francis/pose/relative_poses_dict.pth"
+    load_pose: null 
+
+    # Training modes:
+    # - hierarchical_training
+    # - progressive_training
+    # - pose_only
+    train_mode: hierarchical_training
+
+    # Training level for hierarchical training
+    train_level: 2
+
+    # Partition strategy for training:
+    # - v1: Strategy used in the original paper
+    # - even: Even sampling
+    partition_strategy: v1 
+
+    # Pose training mode:
+    # - null: No special mode
+    # - vfi: Video frame interpolation
+    train_pose_mode: vfi 
+
+    # Multi-source supervision (MSS) configuration:
+    # - Use supervision from both base and vfi ("base+vfi")
+    # - Use supervision from only base ("base")
+    # - Use supervision from only vfi ("vfi")
+    # - To turn off, set to ""
+    multi_source_supervision: base+vfi 
+
+    # Pruning ratio for unimportant 3D Gaussians in each base 3DGS model
+    prune_ratio: 0.5

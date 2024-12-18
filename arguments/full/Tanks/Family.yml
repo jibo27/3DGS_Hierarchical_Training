@@ -1,0 +1,45 @@
+#####################################################
+# Please check arguments/full/Tanks/Francis.yml for detailed documentation on each parameter
+#####################################################
+OptimizationParams:
+    single_step: 300
+    num_iterations_per_frame_each_level: [300, 300, 300]
+
+    densification_interval_leaf: 100
+    densification_interval_nonleaf: 100
+
+    mss_phase1_iteration_per_frame: 50
+    mss_phase1_densification_interval: 100
+    mss_phase1_densify_until_iter_ratio: null
+    mss_phase1_ratio: 0.5
+    mss_phase2_densification_interval: 100
+    mss_phase2_densify_until_iter_ratio: null
+    mss_phase2_ratio: 0.5
+
+    depth_model_type: dpt
+
+ModelParams:
+    FovX: 1.369319187580747
+    FovY: null
+
+    data_path_train: data/Tanks/Family/images
+    data_type_train: images_only
+    data_path_eval: data/Tanks/Family
+    data_type_eval: tanks
+
+    expname: full
+    category: Tanks
+    seq_name: Family
+
+PipelineParams:
+    load_pose: null
+
+    train_mode: hierarchical_training
+    train_level: 2
+    partition_strategy: v1
+
+    train_pose_mode: vfi
+
+    multi_source_supervision: base+vfi
+
+    prune_ratio: 0.5 

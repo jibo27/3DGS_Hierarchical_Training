@@ -1,0 +1,48 @@
+#####################################################
+# Please check arguments/full/Tanks/Francis.yml for detailed documentation on each parameter
+#####################################################
+OptimizationParams:
+    single_step: 300
+    num_iterations_per_frame_each_level: [300, 300, 300]
+    
+    densification_interval_leaf: 100
+
+    mss_phase1_iteration_per_frame: 50
+    mss_phase1_densification_interval: 100
+    mss_phase1_densify_until_iter_ratio: null
+    mss_phase1_ratio: 0.5
+    mss_phase2_densification_interval: 2000
+    mss_phase2_densify_until_iter_ratio: null
+    mss_phase2_ratio: 0.5
+
+
+ModelParams:
+    # Since the provided FoVx value varies for each frame, we utilize the CO3D loader instead of the images_only loader.
+    # The FoVx values are provided in the frame_annotations.jgz file.
+    # The camera poses provided in the dataset are not utilized during training; they are exclusively used for evaluation.
+    FovX: null 
+    FovY: null
+
+    data_path_train: data/co3d/34_1403_4393
+    data_type_train: co3d
+    data_path_eval: data/co3d/34_1403_4393
+    data_type_eval: co3d
+
+    expname: full
+    category: co3d
+    seq_name: teddybear_34_1403_4393
+
+    depth_model_type: zoe
+
+PipelineParams:
+    load_pose: null
+
+    train_mode: hierarchical_training
+    train_level: 2
+    partition_strategy: v1
+
+    train_pose_mode: vfi
+
+    multi_source_supervision: base+vfi
+
+    prune_ratio: 0.5 
