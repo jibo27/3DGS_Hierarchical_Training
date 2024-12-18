@@ -11,7 +11,7 @@
   - [Configuration](#configuration)
   - [Notes on Training](#notes-on-training)
   - [Custom Dataset](#custom-dataset)
-- [Merging Operations](#merging-operations)
+  - [Merging Operations](#merging-operations)
 - [Future Directions](#future-directions)
 - [Acknowledgement](#acknowledgement)
 
@@ -23,40 +23,34 @@
     + [Tanks & Temples](https://www.robots.ox.ac.uk/~wenjing/Tanks.zip)
     + [CO3D-V2](https://www.dropbox.com/scl/fi/6lseati34ch9bx1z67ztu/co3d.zip?rlkey=76ssy7p4c4y8pug94b7z62q3e&st=n554skm5&dl=0)
 + [Pretrained Model & Estimated Pose & Rendered Results](https://www.dropbox.com/scl/fo/5gzinjlld7a0ey8w7q2m5/AMYdul-gQDhWovXT-XcjqIc?rlkey=o8bk1jz8e5cq5ob79hqlwmtsp&st=cx4g3aeu&dl=0) 
-+ [Training logs](https://www.dropbox.com/scl/fo/ne20vhcxmhphtzg2rcr7p/AAIzCd23SVCWZ7-EG5mVHk4?rlkey=0xem3cobp4520mxpg6ic01j24&st=64fb6gkb&dl=0): 
-    + These logs are provided to help debug your reproduction results. See [Notes on Training](#notes-on-training) for details.
++ [Training logs](https://www.dropbox.com/scl/fo/ne20vhcxmhphtzg2rcr7p/AAIzCd23SVCWZ7-EG5mVHk4?rlkey=0xem3cobp4520mxpg6ic01j24&st=64fb6gkb&dl=0)
 
 ---
 
 ## Installation
 
 ### Step 1: Environment Setup
-Unfortunately, we encountered some issues when installing the `diff-gaussian-rasterization` module, so we were unable to fully verify the environment setup. We will address this in a future update.  
-
-That said, the required environment is largely similar to [CF-3DGS](https://github.com/NVlabs/CF-3DGS) or [gaussian_splatting](https://github.com/graphdeco-inria/gaussian-splatting). You can refer to these repositories to set up the environment.  
-
-Some key packages include:  
-- `diff-gaussian-rasterization`  
-- `git+https://github.com/princeton-vl/lietorch.git`  
-- `git+https://github.com/facebookresearch/pytorch3d.git@stable`  
-
-Any other missing modules should be straightforward to install.  
-<!-- ```bash
-conda create -n ht3dgs python=3.7
-conda activate ht3dgs
-conda install conda-forge::cudatoolkit-dev=11.7.0
-conda install pytorch==2.0.0 torchvision==0.15.0 pytorch-cuda=11.7 -c pytorch -c nvidia
-
+First, clone the repository **recursively**. 
+```bash
 git clone --recursive git@github.com:jibo27/3DGS_Hierarchical_Training.git
-pip install -r requirements.txt
-``` -->
+```
+
+Second, install packages following [CF-3DGS](https://github.com/NVlabs/CF-3DGS) or [gaussian_splatting](https://github.com/graphdeco-inria/gaussian-splatting):
++ Unfortunately, we encountered some issues when installing the `diff-gaussian-rasterization` module, so we were unable to fully verify the environment setup. We will address this in a future update.  
++ That said, the required environment is largely similar to [CF-3DGS](https://github.com/NVlabs/CF-3DGS) or [gaussian_splatting](https://github.com/graphdeco-inria/gaussian-splatting). You can refer to these repositories to set up the environment.  
++ Some key packages include:  
+  - `diff-gaussian-rasterization`  
+  - `git+https://github.com/princeton-vl/lietorch.git`  
+  - `git+https://github.com/facebookresearch/pytorch3d.git@stable`  
++ Any other missing modules should be straightforward to install.  
+
 
 ### Step 2: Video Frame Interpolation (VFI)
 
 We use [IFRNet](https://github.com/ltkong218/IFRNet) as the VFI model.
 
 - **Download the pretrained file**: Access the pretrained weights from their shared [link](https://www.dropbox.com/sh/hrewbpedd2cgdp3/AADbEivu0-CKDQcHtKdMNJPJa?dl=0).
-  - Use the `IFRNet/IFRNet_Vimeo90K.pth` file for our implementation.
+  - Our implementation uses the `IFRNet/IFRNet_Vimeo90K.pth`.
 
 - **Place the checkpoint** in the `pretrained/vfi` folder.
 
@@ -134,10 +128,11 @@ Detailed comments on the configuration can be found in the `arguments/full/Tanks
 
 ### Notes on Training
 
-- Training takes about 4h on our machine depending on video length and hardware setup. The detailed training time can be verified in our provided training logs.
-- 3DGS training and pose estimation are independent and can theoretically run in parallel to reduce the training time.
-- Configurations (e.g., densification interval, iterations) are not fully optimized. Better performance may be achievable with tuning.
-- The shared training logs are provided for debugging purposes. We have rerun the experiments using the current cleaned code, and the models corresponding to these logs achieve a performance of 33.41dB on Tanks & Temples, which is similar but not identical to the results reported in the paper (33.53dB). The exact results presented in the paper can be reproduced using the pretrained models available through the shared link above. 
+- Training typically takes around 4 hours on our machine, depending on the video length and hardware setup. Detailed training times can be found in the provided training logs. If you want to reduce training time, consider the following approaches:  
+  - Parallelization: Our 3DGS training and pose estimation are  independent and can be theoretically executed in parallel to save time.  
+  - Disable VFI Support: Set `train_pose_mode: null` and `multi_source_supervision: base` to remove VFI support. Alternatively, reduce the interpolation frequency (e.g., interpolate every 3 frames). This is effective as the interpolation accounts for nearly half of the training time.  
+  - Fewer Training Iterations: Reducing the number of training iterations can decrease the training time.  
+- The shared training logs are results obtained by rerunning experiments using the current cleaned code. The models corresponding to these logs achieve a performance of 33.41dB on Tanks & Temples, which is similar but not identical to the results reported in the paper (33.53dB). The exact results presented in the paper can be reproduced using the pretrained models available through the shared link above. 
 - Empirically, we observe that the training variance for 3DGS is large. As a result, reruning the same experiment can have a quite different result. 
 
 ---
@@ -158,7 +153,7 @@ The code supports three data types: **COLMAP**, **CO3D**, and **images_only**.
 
 #### Step 2: Training
 The training remains the same. 
-For unknown datasets, we recommend you to begin with hierarchical training only (without VFI or multi-source supervision) for stability. Update the YAML configuration as follows:
+For custom datasets, we recommend you to begin with hierarchical training only (without VFI or multi-source supervision) for stability. Update the YAML configuration as follows:
 ```yaml
 train_pose_mode: null
 multi_source_supervision: ""
@@ -188,7 +183,7 @@ If this works well, you can introduce VFI or multi-source supervision.
 
 ---
 
-## Merging Operations
+### Merging Operations
 
 If you're specifically interested in the **merge operation**, refer to the `self.merge_two_3DGS()` function in `trainer/ht3dgs_trainer.py`.
 
