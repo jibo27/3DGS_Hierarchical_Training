@@ -25,7 +25,6 @@ wandb/
 *.pth
 *.ply
 *.png
-*.jpg
 *.mp4
 *.ipynb_checkpoints
 *.ipynb
