@@ -32,7 +32,7 @@
 ### Step 1: Environment Setup
 First, clone the repository **recursively**. 
 ```bash
-git clone --recursive git@github.com:jibo27/3DGS_Hierarchical_Training.git
+git clone --recursive https://github.com/jibo27/3DGS_Hierarchical_Training.git
 ```
 
 Second, install packages following [CF-3DGS](https://github.com/NVlabs/CF-3DGS) or [gaussian_splatting](https://github.com/graphdeco-inria/gaussian-splatting):
@@ -89,10 +89,7 @@ Organize the datasets to match the following structure. (Note: Not all files are
 
 Example folder visualization:
 
-<img src="./figures/data_structure1.jpg" alt="data_structure1" height="100"/>
-<img src="./figures/data_structure2.jpg" alt="data_structure2" height="100"/>
-<img src="./figures/data_structure3.jpg" alt="data_structure3" height="100"/>
-<img src="./figures/data_structure4.jpg" alt="data_structure4" height="100"/>
+<img src="./figures/data_structure1.jpg" alt="data_structure1" height="100"/><img src="./figures/data_structure2.jpg" alt="data_structure2" height="100"/><img src="./figures/data_structure3.jpg" alt="data_structure3" height="100"/><img src="./figures/data_structure4.jpg" alt="data_structure4" height="100"/>
 
 ---
 
