@@ -1,5 +1,6 @@
-# SfM-Free 3D Gaussian Splatting via Hierarchical Training
+# SfM-Free 3D Gaussian Splatting via Hierarchical Training (CVPR 2025)
 
+🎉 Our paper has been accepted by CVPR 2025! 🎉 I would like to express my sincere gratitude to my advisor, the CVPR staff, and you, who are browsing our GitHub and showing interest in our work. 🙏 Thank you so much! 💖
 
 # Table of Contents
 - [Useful Links](#useful-links)
@@ -11,6 +12,7 @@
   - [Configuration](#configuration)
   - [Notes on Training](#notes-on-training)
   - [Custom Dataset](#custom-dataset)
+  - [Debugging or Poor Performance](#debugging-or-poor-performance)
   - [Merging Operations](#merging-operations)
 - [Future Directions](#future-directions)
 - [Acknowledgement](#acknowledgement)
