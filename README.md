@@ -37,15 +37,53 @@ First, clone the repository **recursively**.
 git clone --recursive https://github.com/jibo27/3DGS_Hierarchical_Training.git
 ```
 
-Second, install packages following [CF-3DGS](https://github.com/NVlabs/CF-3DGS) or [gaussian_splatting](https://github.com/graphdeco-inria/gaussian-splatting):
-+ Unfortunately, we encountered some issues when installing the `diff-gaussian-rasterization` module, so we were unable to fully verify the environment setup. We will address this in a future update.  
-+ That said, the required environment is largely similar to [CF-3DGS](https://github.com/NVlabs/CF-3DGS) or [gaussian_splatting](https://github.com/graphdeco-inria/gaussian-splatting). You can refer to these repositories to set up the environment.  
-+ Some key packages include:  
-  - `diff-gaussian-rasterization`  
-  - `git+https://github.com/princeton-vl/lietorch.git`  
-  - `git+https://github.com/facebookresearch/pytorch3d.git@stable`  
-+ Any other missing modules should be straightforward to install.  
+Second, 
+```
+conda create -n ht_3dgs python=3.10.14 -y
+conda deactivate;conda deactivate; # just ensure we enter the correct environment
+conda activate ht_3dgs
 
+# In my machine, the cuda version is 11.7. Please install the corresponding pytorch based on your machine
+pip install torch==2.3.1 torchvision==0.18.1 torchaudio==2.3.1 --index-url https://download.pytorch.org/whl/cu118
+
+pip install einops scipy imageio numpy tqdm opencv-python open3d plyfile kornia timm evo
+pip install git+https://github.com/facebookresearch/pytorch3d.git@stable
+pip install git+https://github.com/princeton-vl/lietorch.git
+pip install submodules/simple-knn
+pip install submodules/diff-gaussian-rasterization
+```
+
+
+A possible bug: 
+
+If you encounter the issue of `torch.cuda.OutOfMemoryError: CUDA out of memory. Tried to allocate 34.63 GiB. GPU` when training the Frame 0, please uninstall `diff-gaussian-rasterization` first and reinstall the new one. Please follow the two steps below:
+
+- Step 1: **Uninstall the current package and install the new one**.
+```
+git clone https://github.com/graphdeco-inria/gaussian-splatting --recursive
+cd gaussian-splatting
+pip uninstall diff_gaussian_rasterization
+pip install submodules/diff-gaussian-rasterization
+```
+
+- Step 2: **Add the antialiasing=False argument**. Add this argument in the following [location](https://github.com/jibo27/3DGS_Hierarchical_Training/blob/main/scene/gaussian_model_ht.py#L809) in the code:
+```
+raster_settings = GaussianRasterizationSettings(
+    image_height=int(viewpoint_camera.image_height),
+    image_width=int(viewpoint_camera.image_width),
+    tanfovx=tanfovx,
+    tanfovy=tanfovy,
+    bg=self.bg_color if not invert_bg_color else 1 - self.bg_color,
+    scale_modifier=scaling_modifier,
+    viewmatrix=viewpoint_camera.world_view_transform,
+    projmatrix=viewpoint_camera.full_proj_transform,
+    sh_degree=self.gaussians.active_sh_degree,
+    campos=viewpoint_camera.camera_center,
+    prefiltered=False,
+    debug=False,
+    antialiasing=False,  # Add this argument
+)
+```
 
 ### Step 2: Video Frame Interpolation (VFI)
 
